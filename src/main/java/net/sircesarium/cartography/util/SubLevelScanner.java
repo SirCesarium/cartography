@@ -17,8 +17,8 @@ import dev.ryanhcode.sable.sublevel.SubLevel;
 import dev.ryanhcode.sable.sublevel.plot.LevelPlot;
 import dev.ryanhcode.sable.sublevel.plot.PlotChunkHolder;
 
-import net.sircesarium.cartography.data.ChunkData;
-import net.sircesarium.cartography.data.SubLevelData;
+import net.sircesarium.cartography.data.storage.ChunkData;
+import net.sircesarium.cartography.data.storage.SubLevelData;
 
 public class SubLevelScanner {
 

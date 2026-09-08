@@ -10,7 +10,7 @@ import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.sircesarium.cartography.data.ChunkData;
+import net.sircesarium.cartography.data.storage.ChunkData;
 
 public class ChunkScanner {
 

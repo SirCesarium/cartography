@@ -10,7 +10,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
-import net.sircesarium.cartography.data.ChunkData;
+import net.sircesarium.cartography.data.storage.ChunkData;
 import net.sircesarium.cartography.util.ChunkScanner;
 
 @EventBusSubscriber(modid = "cartography")

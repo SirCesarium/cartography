@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
 
 import net.minecraft.server.level.ServerLevel;
 import net.sircesarium.cartography.Cartography;
-import net.sircesarium.cartography.data.SubLevelData;
+import net.sircesarium.cartography.data.storage.SubLevelData;
 import net.sircesarium.cartography.util.SubLevelScanner;
 
 import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
