@@ -1,7 +1,5 @@
 package net.sircesarium.cartography.events;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
@@ -11,29 +9,14 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.sircesarium.cartography.data.storage.ChunkData;
+import net.sircesarium.cartography.manager.ChunkManager;
 import net.sircesarium.cartography.util.ChunkScanner;
 
 @EventBusSubscriber(modid = "cartography")
 public class ChunkEvents {
 
-    private static final ConcurrentHashMap<Long, ChunkData> cache = new ConcurrentHashMap<>();
-
-    private static long chunkKey(int chunkX, int chunkZ) {
-        return ((long) chunkX << 32) | (chunkZ & 0xFFFFFFFFL);
-    }
-
-    private static ChunkData getOrCreate(ServerLevel level, ChunkPos pos) {
-        return cache.computeIfAbsent(chunkKey(pos.x, pos.z), k -> {
-            ChunkData data = new ChunkData(level, pos.x, pos.z);
-
-            data.load();
-
-            return data;
-        });
-    }
-
     private static void scanAndSave(ServerLevel level, ChunkPos pos) {
-        ChunkData data = getOrCreate(level, pos);
+        ChunkData data = ChunkManager.getOrCreate(level, pos);
         ChunkAccess chunk = level.getChunk(pos.x, pos.z);
 
         ChunkScanner.scanChunk(chunk, data);
@@ -43,7 +26,7 @@ public class ChunkEvents {
 
     private static void scanColumnAndSave(ServerLevel level, BlockPos blockPos) {
         ChunkPos pos = new ChunkPos(blockPos);
-        ChunkData data = getOrCreate(level, pos);
+        ChunkData data = ChunkManager.getOrCreate(level, pos);
         ChunkAccess chunk = level.getChunk(pos.x, pos.z);
 
         ChunkScanner.scanSingleColumn(chunk, blockPos.getX(), blockPos.getZ(), data);
@@ -65,7 +48,7 @@ public class ChunkEvents {
         if (event.getLevel().isClientSide()) return;
 
         ChunkPos pos = event.getChunk().getPos();
-        ChunkData data = cache.remove(chunkKey(pos.x, pos.z));
+        ChunkData data = ChunkManager.remove(pos);
 
         if (data != null) {
             data.saveIfDirty();

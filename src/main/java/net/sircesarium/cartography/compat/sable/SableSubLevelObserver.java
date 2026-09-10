@@ -4,13 +4,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import net.minecraft.server.level.ServerLevel;
 import net.sircesarium.cartography.Cartography;
 import net.sircesarium.cartography.data.storage.SubLevelData;
+import net.sircesarium.cartography.manager.SubLevelManager;
 import net.sircesarium.cartography.util.SubLevelScanner;
 
 import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
@@ -23,7 +22,6 @@ public class SableSubLevelObserver implements SubLevelObserver {
     private static final int SCAN_INTERVAL = 20;
 
     private final ServerLevel level;
-    private final Map<UUID, SubLevelData> subLevelDataMap = new ConcurrentHashMap<>();
     private int tickCounter;
     private volatile boolean closed;
 
@@ -47,12 +45,10 @@ public class SableSubLevelObserver implements SubLevelObserver {
 
         if (closed) return;
 
-        SubLevelData data = new SubLevelData(level, uuid);
+        SubLevelData data = SubLevelManager.getOrCreate(level, uuid);
 
         data.loadPose();
         data.savePose();
-
-        subLevelDataMap.put(uuid, data);
     }
 
     @Override
@@ -60,7 +56,7 @@ public class SableSubLevelObserver implements SubLevelObserver {
         UUID uuid = subLevel.getUniqueId();
         Cartography.LOGGER.info("[Cartography] onSubLevelRemoved: {} reason={} closed={}", uuid, reason, closed);
 
-        SubLevelData data = subLevelDataMap.remove(uuid);
+        SubLevelData data = SubLevelManager.remove(uuid);
 
         if (data != null) {
             Cartography.LOGGER.info("[Cartography] Saving chunks before removal...");
@@ -93,12 +89,10 @@ public class SableSubLevelObserver implements SubLevelObserver {
             for (SubLevel subLevel : container.getAllSubLevels()) {
                 UUID uuid = subLevel.getUniqueId();
 
-                SubLevelData data = subLevelDataMap.get(uuid);
+                SubLevelData data = SubLevelManager.get(uuid);
 
                 if (data == null) {
-                    data = new SubLevelData(level, uuid);
-                    data.loadPose();
-                    subLevelDataMap.put(uuid, data);
+                    data = SubLevelManager.getOrCreate(level, uuid);
                 }
 
                 SubLevelScanner.scanSubLevel(subLevel, data);
@@ -110,7 +104,7 @@ public class SableSubLevelObserver implements SubLevelObserver {
                 );
 
                 data.saveIfDirty();
-                
+
                 if (data.isPoseDirty()) {
                     data.savePose();
                 }
