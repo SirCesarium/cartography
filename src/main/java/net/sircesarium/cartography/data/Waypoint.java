@@ -2,27 +2,29 @@ package net.sircesarium.cartography.data;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 
 import java.util.UUID;
 
 @Getter
 public class Waypoint {
-    private final int x;
-    private final int y;
-    private final int z;
+    private final BlockPos pos;
+    private final ResourceKey<Level> dimension;
     private final String name;
-    private final int color;
+    private final Integer color;
     private final ResourceLocation icon;
     private final UUID author;
     @Setter
     private Long expiresAt;
 
-    public Waypoint(int x, int y, int z, String name, int color, ResourceLocation icon, UUID author, Long expiresAt) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    public Waypoint(BlockPos pos, ResourceKey<Level> dimension, String name, Integer color, ResourceLocation icon, UUID author, Long expiresAt) {
+        this.pos = pos;
+        this.dimension = dimension;
         this.name = name;
         this.color = color;
         this.icon = icon;
@@ -36,11 +38,16 @@ public class Waypoint {
 
     public CompoundTag toNBT() {
         CompoundTag tag = new CompoundTag();
-        tag.putInt("x", x);
-        tag.putInt("y", y);
-        tag.putInt("z", z);
+        tag.putInt("x", pos.getX());
+        tag.putInt("y", pos.getY());
+        tag.putInt("z", pos.getZ());
+        tag.putString("dimension", dimension.location().toString());
         tag.putString("name", name);
-        tag.putInt("color", color);
+
+        if (color != null) {
+            tag.putInt("color", color);
+        }
+
         tag.putString("icon", icon.toString());
         tag.putString("author", author.toString());
 
@@ -53,11 +60,12 @@ public class Waypoint {
 
     public static Waypoint fromNBT(CompoundTag tag) {
         return new Waypoint(
-                tag.getInt("x"),
-                tag.getInt("y"),
-                tag.getInt("z"),
+                new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")),
+                tag.contains("dimension")
+                    ? ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(tag.getString("dimension")))
+                    : Level.OVERWORLD,
                 tag.getString("name"),
-                tag.getInt("color"),
+                tag.contains("color") ? tag.getInt("color") : null,
                 ResourceLocation.parse(tag.getString("icon")),
                 UUID.fromString(tag.getString("author")),
                 tag.contains("expiresAt") ? tag.getLong("expiresAt") : null

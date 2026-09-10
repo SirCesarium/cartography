@@ -1,11 +1,14 @@
 package net.sircesarium.cartography.data.storage;
 
 import lombok.Getter;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
 import net.sircesarium.cartography.data.Waypoint;
 import net.sircesarium.cartography.util.NBTData;
 
@@ -34,8 +37,8 @@ public class WaypointData extends NBTData {
         this.dirty = false;
     }
 
-    public void addWaypoint(int x, int y, int z, String name, int color, ResourceLocation icon, UUID author, Long expiresAt) {
-        waypoints.add(new Waypoint(x, y, z, name, color, icon, author, expiresAt));
+    public void addWaypoint(BlockPos pos, ResourceKey<Level> dimension, String name, Integer color, ResourceLocation icon, UUID author, Long expiresAt) {
+        waypoints.add(new Waypoint(pos, dimension, name, color, icon, author, expiresAt));
 
         dirty = true;
     }
