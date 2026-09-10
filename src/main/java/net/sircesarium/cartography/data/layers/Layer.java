@@ -16,10 +16,12 @@ public abstract class Layer {
 
     protected List<String> palette;
     protected byte[] blocks;
+    protected int[] yCoordinates;
 
     protected Layer() {
         this.palette = new ArrayList<>();
         this.blocks = new byte[BLOCKS_PER_CHUNK];
+        this.yCoordinates = null;
     }
 
     public int getBlockIndex(int localX, int localZ) {
@@ -39,14 +41,27 @@ public abstract class Layer {
     }
 
     public boolean setBlock(int localX, int localZ, String blockName) {
+        return setBlock(localX, localZ, blockName, 0);
+    }
+
+    public boolean setBlock(int localX, int localZ, String blockName, int y) {
         int idx = getBlockIndex(localX, localZ);
         int newIdx = getPaletteIndex(blockName);
 
-        if (blocks[idx] == (byte) newIdx) return false;
+        boolean changed = blocks[idx] != (byte) newIdx;
 
         blocks[idx] = (byte) newIdx;
 
-        return true;
+        if (yCoordinates == null && y != 0) {
+            yCoordinates = new int[BLOCKS_PER_CHUNK];
+        }
+
+        if (yCoordinates != null && yCoordinates[idx] != y) {
+            yCoordinates[idx] = y;
+            changed = true;
+        }
+
+        return changed;
     }
 
     public String getBlock(int localX, int localZ) {
@@ -67,6 +82,10 @@ public abstract class Layer {
         tag.put("palette", paletteTag);
         tag.putByteArray("blocks", blocks);
 
+        if (yCoordinates != null) {
+            tag.putIntArray("y", yCoordinates);
+        }
+
         return tag;
     }
 
@@ -82,5 +101,12 @@ public abstract class Layer {
         byte[] loaded = tag.getByteArray("blocks");
 
         this.blocks = loaded.length == BLOCKS_PER_CHUNK ? loaded : new byte[BLOCKS_PER_CHUNK];
+
+        if (tag.contains("y")) {
+            int[] loadedY = tag.getIntArray("y");
+            this.yCoordinates = loadedY.length == BLOCKS_PER_CHUNK ? loadedY : null;
+        } else {
+            this.yCoordinates = null;
+        }
     }
 }

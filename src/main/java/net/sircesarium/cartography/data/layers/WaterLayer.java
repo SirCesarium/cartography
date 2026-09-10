@@ -13,7 +13,11 @@ public class WaterLayer extends Layer {
     }
 
     public boolean setWater(int localX, int localZ, String fluidName, int waterDepth) {
-        boolean changed = setBlock(localX, localZ, fluidName);
+        return setWater(localX, localZ, fluidName, waterDepth, 0);
+    }
+
+    public boolean setWater(int localX, int localZ, String fluidName, int waterDepth, int y) {
+        boolean changed = setBlock(localX, localZ, fluidName, y);
         int idx = getBlockIndex(localX, localZ);
         byte newDepth = (byte) Math.min(waterDepth, 255);
 

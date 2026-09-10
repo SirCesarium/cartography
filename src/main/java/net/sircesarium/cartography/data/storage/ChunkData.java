@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import lombok.Getter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.sircesarium.cartography.data.layers.BiomeLayer;
 import net.sircesarium.cartography.data.layers.DecorationsLayer;
 import net.sircesarium.cartography.data.layers.TerrainLayer;
 import net.sircesarium.cartography.data.layers.VegetationLayer;
@@ -22,6 +23,7 @@ public class ChunkData extends NBTData {
     private WaterLayer water;
     private VegetationLayer vegetation;
     private DecorationsLayer decorations;
+    private BiomeLayer biome;
 
     public ChunkData(ServerLevel level, int chunkX, int chunkZ) {
         super(level, "chunks/c." + chunkX + "." + chunkZ + ".dat");
@@ -32,6 +34,7 @@ public class ChunkData extends NBTData {
         this.water = new WaterLayer();
         this.vegetation = new VegetationLayer();
         this.decorations = new DecorationsLayer();
+        this.biome = new BiomeLayer();
     }
 
     public ChunkData(Path basePath, String fileName, int chunkX, int chunkZ) {
@@ -43,6 +46,7 @@ public class ChunkData extends NBTData {
         this.water = new WaterLayer();
         this.vegetation = new VegetationLayer();
         this.decorations = new DecorationsLayer();
+        this.biome = new BiomeLayer();
     }
 
     public void markDirty() {
@@ -67,6 +71,7 @@ public class ChunkData extends NBTData {
         tag.put("water", water.toNBT());
         tag.put("vegetation", vegetation.toNBT());
         tag.put("decorations", decorations.toNBT());
+        tag.put("biome", biome.toNBT());
         return tag;
     }
 
@@ -76,5 +81,6 @@ public class ChunkData extends NBTData {
         this.water = WaterLayer.load(tag.getCompound("water"));
         this.vegetation = VegetationLayer.load(tag.getCompound("vegetation"));
         this.decorations = DecorationsLayer.load(tag.getCompound("decorations"));
+        this.biome = BiomeLayer.load(tag.getCompound("biome"));
     }
 }
