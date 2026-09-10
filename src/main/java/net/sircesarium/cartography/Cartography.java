@@ -4,10 +4,12 @@ import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
 
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.common.Mod;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.sircesarium.cartography.config.CartographyServerConfig;
 
 @SuppressWarnings("unused")
 @Mod(Cartography.MODID)
@@ -15,7 +17,13 @@ public class Cartography {
     public static final String MODID = "cartography";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public Cartography(IEventBus modEventBus, ModContainer modContainer) {
+    public static ResourceLocation rl(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MODID, path);
+    }
+
+    public Cartography(ModContainer modContainer) {
+        modContainer.registerConfig(ModConfig.Type.SERVER, CartographyServerConfig.SPEC);
+
         if (ModList.get().isLoaded("sable")) {
             SableCompatInit.init();
         }

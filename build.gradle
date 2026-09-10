@@ -22,6 +22,7 @@ repositories {
     maven { url = "https://maven.createmod.net" }              // Create, Ponder, Flywheel
     maven { url = "https://maven.ryanhcode.dev/releases" }     // Sable
     maven { url = "https://mvn.devos.one/snapshots" }          // Registrate
+    maven { url = "https://maven.isxander.dev/releases" }      // YACL
     maven {
         url = "https://api.modrinth.com/maven"
         content { includeGroup "maven.modrinth" }
@@ -85,6 +86,9 @@ configurations {
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.46'
     annotationProcessor 'org.projectlombok:lombok:1.18.46'
+
+    // YACL
+    implementation "dev.isxander:yet-another-config-lib:3.8.2+1.21.1-neoforge"
 
     // Sable
     compileOnly("dev.ryanhcode.sable:sable-neoforge-1.21.1:2.0.5") {
