@@ -26,7 +26,7 @@ public class ChunkData extends NBTData {
     private BiomeLayer biome;
 
     public ChunkData(ServerLevel level, int chunkX, int chunkZ) {
-        super(level, "chunks/c." + chunkX + "." + chunkZ + ".dat");
+        super(level, "chunks/" + level.dimension().location().getPath() + "/c." + chunkX + "." + chunkZ + ".dat");
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
         this.dirty = false;

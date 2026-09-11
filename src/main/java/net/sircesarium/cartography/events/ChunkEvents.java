@@ -47,8 +47,9 @@ public class ChunkEvents {
     public static void onChunkUnload(ChunkEvent.Unload event) {
         if (event.getLevel().isClientSide()) return;
 
+        ServerLevel level = (ServerLevel) event.getLevel();
         ChunkPos pos = event.getChunk().getPos();
-        ChunkData data = ChunkManager.remove(pos);
+        ChunkData data = ChunkManager.remove(level.dimension(), pos);
 
         if (data != null) {
             data.saveIfDirty();
