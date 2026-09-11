@@ -56,6 +56,13 @@ public class WaypointData extends NBTData {
         fireChange();
     }
 
+    public void addWaypoint(UUID id, BlockPos pos, ResourceKey<Level> dimension, String name, Integer color, ResourceLocation icon, UUID author, Long expiresAt) {
+        waypoints.add(new Waypoint(id, pos, dimension, name, color, icon, author, expiresAt));
+
+        dirty = true;
+        fireChange();
+    }
+
     public boolean removeWaypoint(int index) {
         if (index < 0 || index >= waypoints.size()) return false;
 
@@ -64,6 +71,27 @@ public class WaypointData extends NBTData {
         fireChange();
 
         return true;
+    }
+
+    public boolean removeWaypointById(UUID id) {
+        if (waypoints.removeIf(wp -> wp.getId().equals(id))) {
+            dirty = true;
+            fireChange();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean updateWaypoint(Waypoint updated) {
+        for (int i = 0; i < waypoints.size(); i++) {
+            if (waypoints.get(i).getId().equals(updated.getId())) {
+                waypoints.set(i, updated);
+                dirty = true;
+                fireChange();
+                return true;
+            }
+        }
+        return false;
     }
 
     public void removeExpired() {

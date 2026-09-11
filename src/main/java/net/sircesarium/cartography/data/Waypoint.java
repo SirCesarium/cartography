@@ -13,6 +13,7 @@ import java.util.UUID;
 
 @Getter
 public class Waypoint {
+    private final UUID id;
     private final BlockPos pos;
     private final ResourceKey<Level> dimension;
     private final String name;
@@ -22,7 +23,8 @@ public class Waypoint {
     @Setter
     private Long expiresAt;
 
-    public Waypoint(BlockPos pos, ResourceKey<Level> dimension, String name, Integer color, ResourceLocation icon, UUID author, Long expiresAt) {
+    public Waypoint(UUID id, BlockPos pos, ResourceKey<Level> dimension, String name, Integer color, ResourceLocation icon, UUID author, Long expiresAt) {
+        this.id = id;
         this.pos = pos;
         this.dimension = dimension;
         this.name = name;
@@ -32,12 +34,17 @@ public class Waypoint {
         this.expiresAt = expiresAt;
     }
 
+    public Waypoint(BlockPos pos, ResourceKey<Level> dimension, String name, Integer color, ResourceLocation icon, UUID author, Long expiresAt) {
+        this(UUID.randomUUID(), pos, dimension, name, color, icon, author, expiresAt);
+    }
+
     public boolean isExpired() {
         return expiresAt != null && expiresAt != -1 && System.currentTimeMillis() > expiresAt;
     }
 
     public CompoundTag toNBT() {
         CompoundTag tag = new CompoundTag();
+        tag.putString("id", id.toString());
         tag.putInt("x", pos.getX());
         tag.putInt("y", pos.getY());
         tag.putInt("z", pos.getZ());
@@ -60,6 +67,7 @@ public class Waypoint {
 
     public static Waypoint fromNBT(CompoundTag tag) {
         return new Waypoint(
+                tag.contains("id") ? UUID.fromString(tag.getString("id")) : UUID.randomUUID(),
                 new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")),
                 tag.contains("dimension")
                     ? ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(tag.getString("dimension")))
