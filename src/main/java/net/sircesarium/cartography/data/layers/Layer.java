@@ -25,6 +25,9 @@ public abstract class Layer {
     }
 
     public int getBlockIndex(int localX, int localZ) {
+        if (localX < 0 || localX >= CHUNK_SIZE || localZ < 0 || localZ >= CHUNK_SIZE) {
+            throw new IndexOutOfBoundsException("Block coords out of range: " + localX + "," + localZ);
+        }
         return localZ * CHUNK_SIZE + localX;
     }
 

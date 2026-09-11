@@ -57,6 +57,8 @@ public class WaypointData extends NBTData {
     }
 
     public void addWaypoint(UUID id, BlockPos pos, ResourceKey<Level> dimension, String name, Integer color, ResourceLocation icon, UUID author, Long expiresAt) {
+        if (waypoints.stream().anyMatch(wp -> wp.getId().equals(id))) return;
+
         waypoints.add(new Waypoint(id, pos, dimension, name, color, icon, author, expiresAt));
 
         dirty = true;

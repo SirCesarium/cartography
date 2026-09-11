@@ -24,6 +24,9 @@ public class Waypoint {
     private Long expiresAt;
 
     public Waypoint(UUID id, BlockPos pos, ResourceKey<Level> dimension, String name, Integer color, ResourceLocation icon, UUID author, Long expiresAt) {
+        if (expiresAt != null && expiresAt != -1 && expiresAt <= 0) {
+            throw new IllegalArgumentException("expiresAt must be null, -1, or > 0, got " + expiresAt);
+        }
         this.id = id;
         this.pos = pos;
         this.dimension = dimension;
