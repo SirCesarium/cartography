@@ -15,8 +15,10 @@ public class CartographyServerConfig {
 
     public static ModConfigSpec.BooleanValue saveWaypointOnRespawnChange;
     public static ModConfigSpec.BooleanValue saveWaypointOnMount;
+    public static ModConfigSpec.BooleanValue saveWaypointOnDeath;
     public static ModConfigSpec.ConfigValue<List<? extends String>> mountBlacklist;
     public static ModConfigSpec.IntValue removeMountWaypointAfter;
+    public static ModConfigSpec.IntValue deathWaypointExpiry;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -40,6 +42,14 @@ public class CartographyServerConfig {
         removeMountWaypointAfter = builder
                 .comment("Seconds before a mount waypoint is removed (0 = never)")
                 .defineInRange("removeMountWaypointAfter", 300, 0, 7200);
+
+        saveWaypointOnDeath = builder
+                .comment("Save a temporary waypoint at death location")
+                .define("saveWaypointOnDeath", true);
+
+        deathWaypointExpiry = builder
+                .comment("Seconds before a death waypoint is removed (0 = never)")
+                .defineInRange("deathWaypointExpiry", 300, 0, 7200);
 
         SPEC = builder.build();
     }

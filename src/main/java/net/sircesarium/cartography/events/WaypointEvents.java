@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityMountEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerSetSpawnEvent;
 import net.sircesarium.cartography.Cartography;
 import net.sircesarium.cartography.config.CartographyServerConfig;
@@ -66,6 +67,33 @@ public class WaypointEvents {
             data.saveIfDirty();
         } catch (Exception e) {
             Cartography.LOGGER.error("Failed to save waypoint on spawn set", e);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerClone(PlayerEvent.Clone event) {
+        try {
+            if (event.getEntity().level().isClientSide()) return;
+            if (!event.isWasDeath()) return;
+            if (!CartographyServerConfig.saveWaypointOnDeath.get()) return;
+
+            ServerPlayer newPlayer = (ServerPlayer) event.getEntity();
+            ServerLevel level = newPlayer.serverLevel();
+            BlockPos deathPos = event.getOriginal().blockPosition();
+
+            WaypointData data = WaypointManager.getOrCreate(level);
+
+            boolean waypointExists = data.getWaypoints().stream()
+                    .anyMatch(wp -> wp.getPos().equals(deathPos) && wp.getDimension().equals(level.dimension()));
+            if (waypointExists) return;
+
+            int seconds = CartographyServerConfig.deathWaypointExpiry.get();
+            Long removeAt = seconds > 0 ? System.currentTimeMillis() + (seconds * 1000L) : -1L;
+
+            data.addWaypoint(deathPos, level.dimension(), newPlayer.getDisplayName().getString() + "'s death", null, ResourceLocation.parse("minecraft:skeleton_skull"), newPlayer.getUUID(), removeAt);
+            data.saveIfDirty();
+        } catch (Exception e) {
+            Cartography.LOGGER.error("Failed to save waypoint on death", e);
         }
     }
 
