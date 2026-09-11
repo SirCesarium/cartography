@@ -40,6 +40,12 @@ public class SubLevelData {
         this.poseDirty = false;
     }
 
+    SubLevelData(Path basePath, UUID uuid) {
+        this.uuid = uuid;
+        this.basePath = basePath;
+        this.poseDirty = false;
+    }
+
     public void updatePose(Vector3d position, Quaterniond rotation, Vector3d scale) {
         boolean changed = this.posX != position.x() || this.posY != position.y() || this.posZ != position.z()
                 
