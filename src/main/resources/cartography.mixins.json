@@ -1,0 +1,9 @@
+{
+  "required": true,
+  "package": "net.sircesarium.cartography.client.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": ["DebugKeyMixin"],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
