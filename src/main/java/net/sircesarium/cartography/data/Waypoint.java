@@ -33,7 +33,7 @@ public class Waypoint {
     }
 
     public boolean isExpired() {
-        return expiresAt != null && System.currentTimeMillis() > expiresAt;
+        return expiresAt != null && expiresAt != -1 && System.currentTimeMillis() > expiresAt;
     }
 
     public CompoundTag toNBT() {

@@ -14,7 +14,6 @@ import net.sircesarium.cartography.util.NBTData;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,6 +21,7 @@ import java.util.UUID;
 public class WaypointData extends NBTData {
     private final List<Waypoint> waypoints;
     private boolean dirty;
+    private Runnable onChange;
 
     public WaypointData(ServerLevel level) {
         super(level, "waypoints.dat");
@@ -37,10 +37,23 @@ public class WaypointData extends NBTData {
         this.dirty = false;
     }
 
+    public void setOnChange(Runnable onChange) {
+        this.onChange = onChange;
+    }
+
+    public List<Waypoint> getWaypoints() {
+        if (waypoints.removeIf(Waypoint::isExpired)) {
+            dirty = true;
+            fireChange();
+        }
+        return waypoints;
+    }
+
     public void addWaypoint(BlockPos pos, ResourceKey<Level> dimension, String name, Integer color, ResourceLocation icon, UUID author, Long expiresAt) {
         waypoints.add(new Waypoint(pos, dimension, name, color, icon, author, expiresAt));
 
         dirty = true;
+        fireChange();
     }
 
     public boolean removeWaypoint(int index) {
@@ -48,24 +61,26 @@ public class WaypointData extends NBTData {
 
         waypoints.remove(index);
         dirty = true;
+        fireChange();
 
         return true;
     }
 
     public void removeExpired() {
-        Iterator<Waypoint> it = waypoints.iterator();
-
-        while (it.hasNext()) {
-            if (it.next().isExpired()) {
-                it.remove();
-
-                dirty = true;
-            }
+        if (waypoints.removeIf(Waypoint::isExpired)) {
+            dirty = true;
+            fireChange();
         }
     }
 
     public void markDirty() {
         this.dirty = true;
+    }
+
+    private void fireChange() {
+        if (onChange != null) {
+            onChange.run();
+        }
     }
 
     public void saveIfDirty() {
