@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public abstract class Layer {
+public class Layer {
     public static final int CHUNK_SIZE = 16;
     protected static final int BLOCKS_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE;
 
@@ -18,10 +18,16 @@ public abstract class Layer {
     protected byte[] blocks;
     protected int[] yCoordinates;
 
-    protected Layer() {
+    public Layer() {
         this.palette = new ArrayList<>();
         this.blocks = new byte[BLOCKS_PER_CHUNK];
         this.yCoordinates = null;
+    }
+
+    public static Layer load(CompoundTag tag) {
+        Layer layer = new Layer();
+        layer.fromNBT(tag);
+        return layer;
     }
 
     public int getBlockIndex(int localX, int localZ) {
@@ -67,6 +73,7 @@ public abstract class Layer {
         return changed;
     }
 
+    @SuppressWarnings("unused")
     public String getBlock(int localX, int localZ) {
         int paletteIdx = blocks[getBlockIndex(localX, localZ)] & 0xFF;
         if (paletteIdx == 0) return null;

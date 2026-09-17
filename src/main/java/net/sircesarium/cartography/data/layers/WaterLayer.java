@@ -29,6 +29,7 @@ public class WaterLayer extends Layer {
         return changed;
     }
 
+    @SuppressWarnings("unused")
     public int getWaterDepth(int localX, int localZ) {
         return depth[getBlockIndex(localX, localZ)] & 0xFF;
     }
