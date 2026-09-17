@@ -1,7 +1,5 @@
 package net.sircesarium.cartography.data.storage;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,13 +7,11 @@ import java.util.UUID;
 
 import lombok.Getter;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtAccounter;
-import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.LevelResource;
 import net.sircesarium.cartography.Cartography;
+import net.sircesarium.cartography.helpers.FileIOHelper;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Quaterniond;
 import org.joml.Vector3d;
 
 @Getter
@@ -40,15 +36,8 @@ public class SubLevelData {
         this.poseDirty = false;
     }
 
-    SubLevelData(Path basePath, UUID uuid) {
-        this.uuid = uuid;
-        this.basePath = basePath;
-        this.poseDirty = false;
-    }
-
-    public void updatePose(Vector3d position, Quaterniond rotation, Vector3d scale) {
+    public void updatePose(Vector3d position, Vector3d scale) {
         boolean changed = this.posX != position.x() || this.posY != position.y() || this.posZ != position.z()
-                
                 || this.scaleX != scale.x() || this.scaleY != scale.y() || this.scaleZ != scale.z();
 
         this.posX = position.x();
@@ -76,16 +65,10 @@ public class SubLevelData {
 
     public void savePose() {
         try {
-            if (!basePath.toFile().mkdirs() && !basePath.toFile().exists()) {
-                Cartography.LOGGER.error("Failed to create directory: {}", basePath);
-            }
-
-            CompoundTag tag = getCompoundTag();
-
-            NbtIo.writeCompressed(tag, basePath.resolve("meta.dat"));
-
+            FileIOHelper.ensureDirectory(basePath);
+            FileIOHelper.writeNbt(getCompoundTag(), basePath.resolve("meta.dat"));
             poseDirty = false;
-        } catch (IOException e) {
+        } catch (Exception e) {
             Cartography.LOGGER.error("Failed to save sublevel meta for {}", uuid, e);
         }
     }
@@ -105,9 +88,11 @@ public class SubLevelData {
 
     public void loadPose() {
         Path file = basePath.resolve("meta.dat");
-        if (!Files.exists(file)) return;
+
+        if (!FileIOHelper.exists(file)) return;
+
         try {
-            CompoundTag tag = NbtIo.readCompressed(file, NbtAccounter.unlimitedHeap());
+            CompoundTag tag = FileIOHelper.readNbt(file);
 
             posX = tag.getDouble("posX");
             posY = tag.getDouble("posY");
@@ -115,18 +100,12 @@ public class SubLevelData {
             scaleX = tag.getDouble("scaleX");
             scaleY = tag.getDouble("scaleY");
             scaleZ = tag.getDouble("scaleZ");
-        } catch (IOException e) {
+        } catch (Exception e) {
             Cartography.LOGGER.error("Failed to load sublevel meta for {}", uuid, e);
         }
     }
 
     public void saveAllChunks() {
-        for (ChunkData chunk : chunks.values()) {
-            chunk.saveIfDirty();
-        }
-    }
-
-    public void saveIfDirty() {
         for (ChunkData chunk : chunks.values()) {
             chunk.saveIfDirty();
         }

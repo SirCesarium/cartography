@@ -26,6 +26,6 @@ public class SubLevelManager {
     }
 
     public static void saveAll() {
-        cache.values().forEach(SubLevelData::saveIfDirty);
+        cache.values().forEach(SubLevelData::saveAllChunks);
     }
 }

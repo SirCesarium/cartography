@@ -1,7 +1,7 @@
 package net.sircesarium.cartography.compat.sable;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.bus.api.IEventBus;
@@ -12,7 +12,7 @@ import dev.ryanhcode.sable.neoforge.event.ForgeSableSubLevelContainerReadyEvent;
 
 public class SableCompat {
 
-    private static final List<SableSubLevelObserver> observers = new ArrayList<>();
+    private static final List<SableSubLevelObserver> observers = new CopyOnWriteArrayList<>();
 
     public static void init() {
         Cartography.LOGGER.info("Sable detected, registering sub-level compat");

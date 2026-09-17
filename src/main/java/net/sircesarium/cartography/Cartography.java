@@ -11,7 +11,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.sircesarium.cartography.config.CartographyServerConfig;
 
-@SuppressWarnings("unused")
 @Mod(Cartography.MODID)
 public class Cartography {
     public static final String MODID = "cartography";
@@ -35,6 +34,7 @@ public class Cartography {
                 Class.forName("net.sircesarium.cartography.compat.sable.SableCompat")
                         .getMethod("init")
                         .invoke(null);
+                
                 LOGGER.info("Sable compat initialized");
             } catch (Exception e) {
                 LOGGER.error("Failed to initialize Sable compat", e);

@@ -27,6 +27,7 @@ public class Waypoint {
         if (expiresAt != null && expiresAt != -1 && expiresAt <= 0) {
             throw new IllegalArgumentException("expiresAt must be null, -1, or > 0, got " + expiresAt);
         }
+
         this.id = id;
         this.pos = pos;
         this.dimension = dimension;
@@ -47,6 +48,7 @@ public class Waypoint {
 
     public CompoundTag toNBT() {
         CompoundTag tag = new CompoundTag();
+        
         tag.putString("id", id.toString());
         tag.putInt("x", pos.getX());
         tag.putInt("y", pos.getY());
@@ -73,8 +75,8 @@ public class Waypoint {
                 tag.contains("id") ? UUID.fromString(tag.getString("id")) : UUID.randomUUID(),
                 new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")),
                 tag.contains("dimension")
-                    ? ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(tag.getString("dimension")))
-                    : Level.OVERWORLD,
+                        ? ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(tag.getString("dimension")))
+                        : Level.OVERWORLD,
                 tag.getString("name"),
                 tag.contains("color") ? tag.getInt("color") : null,
                 ResourceLocation.parse(tag.getString("icon")),
