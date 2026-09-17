@@ -2,13 +2,6 @@ package net.sircesarium.cartography.config;
 
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class CartographyServerConfig {
@@ -44,7 +37,7 @@ public class CartographyServerConfig {
 
         mountBlacklist = builder
                 .comment("Entities that don't create waypoints when mounted",
-                         "Use #namespace:tag for entity tags, or namespace:entity for specific entities")
+                        "Use #namespace:tag for entity tags, or namespace:entity for specific entities")
                 .defineList("mountBlacklist",
                         () -> List.of("minecraft:strider"),
                         () -> "",
@@ -66,7 +59,7 @@ public class CartographyServerConfig {
 
         hideF3Coordinates = builder
                 .comment("Hide XYZ coordinates in F3 overlay",
-                         "DISABLED: no restriction, NON_OPS: non-ops only, ALL: everyone")
+                        "DISABLED: no restriction, NON_OPS: non-ops only, ALL: everyone")
                 .defineEnum("hideF3Coordinates", F3Restriction.DISABLED);
 
         hideF3Block = builder
@@ -104,28 +97,5 @@ public class CartographyServerConfig {
         builder.pop();
 
         SPEC = builder.build();
-    }
-
-    public static boolean isRestricted(ModConfigSpec.EnumValue<F3Restriction> setting) {
-        F3Restriction r = setting.get();
-        if (r == F3Restriction.DISABLED) return false;
-        boolean isOp = Minecraft.getInstance().player.hasPermissions(2);
-        return r == F3Restriction.ALL || (r == F3Restriction.NON_OPS && !isOp);
-    }
-
-    public static boolean isVehicleBlacklisted(Entity vehicle) {
-        ResourceLocation key = BuiltInRegistries.ENTITY_TYPE.getKey(vehicle.getType());
-
-        for (String entry : mountBlacklist.get()) {
-            if (entry.startsWith("#")) {
-                ResourceLocation tagLoc = ResourceLocation.parse(entry.substring(1));
-                TagKey<EntityType<?>> tag = TagKey.create(Registries.ENTITY_TYPE, tagLoc);
-                if (vehicle.getType().is(tag)) return true;
-            } else {
-                ResourceLocation id = ResourceLocation.parse(entry);
-                if (key.equals(id)) return true;
-            }
-        }
-        return false;
     }
 }
