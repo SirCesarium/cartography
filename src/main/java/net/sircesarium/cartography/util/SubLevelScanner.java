@@ -3,15 +3,9 @@ package net.sircesarium.cartography.util;
 import java.util.Collection;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
 
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import dev.ryanhcode.sable.sublevel.plot.LevelPlot;
@@ -62,24 +56,25 @@ public class SubLevelScanner {
             BlockState state = chunk.getBlockState(pos);
             FluidState fluid = state.getFluidState();
 
-            BlockType type = classify(state, fluid);
+            BlockType type = BlockClassifier.classify(state, fluid);
 
             switch (type) {
-                case TERRAIN -> terrainBlock = getRegistryName(state.getBlock());
+                case TERRAIN -> terrainBlock = BlockClassifier.getRegistryName(state.getBlock());
                 case WATER -> {
                     waterDepth++;
+
                     if (waterBlock == null) {
-                        waterBlock = getRegistryName(fluid.getType());
+                        waterBlock = BlockClassifier.getRegistryName(fluid.getType());
                     }
                 }
                 case VEGETATION -> {
                     if (vegetationBlock == null) {
-                        vegetationBlock = getRegistryName(state.getBlock());
+                        vegetationBlock = BlockClassifier.getRegistryName(state.getBlock());
                     }
                 }
                 case DECORATIONS -> {
                     if (decorationsBlock == null) {
-                        decorationsBlock = getRegistryName(state.getBlock());
+                        decorationsBlock = BlockClassifier.getRegistryName(state.getBlock());
                     }
                 }
                 case AIR -> {
@@ -90,6 +85,7 @@ public class SubLevelScanner {
         }
 
         boolean changed = false;
+
         if (terrainBlock != null) {
             changed |= data.getTerrain().setBlock(localX, localZ, terrainBlock);
         }
@@ -105,36 +101,5 @@ public class SubLevelScanner {
         if (changed) {
             data.markDirty();
         }
-    }
-
-    static BlockType classify(BlockState state, FluidState fluid) {
-        if (state.isAir()) return BlockType.AIR;
-        if (fluid.getType() == Fluids.WATER || fluid.getType() == Fluids.FLOWING_WATER) return BlockType.WATER;
-        if (state.canOcclude()) return BlockType.TERRAIN;
-        if (isPlant(state)) return BlockType.VEGETATION;
-
-        return BlockType.DECORATIONS;
-    }
-
-    private static boolean isPlant(BlockState state) {
-        return state.is(BlockTags.FLOWERS)
-                || state.is(BlockTags.LEAVES)
-                || state.is(BlockTags.CROPS)
-                || state.is(BlockTags.SMALL_FLOWERS)
-                || state.is(BlockTags.TALL_FLOWERS);
-    }
-
-    private static String getRegistryName(Object obj) {
-        ResourceLocation key;
-
-        if (obj instanceof Block block) {
-            key = BuiltInRegistries.BLOCK.getKey(block);
-        } else if (obj instanceof Fluid fluid) {
-            key = BuiltInRegistries.FLUID.getKey(fluid);
-        } else {
-            return "unknown";
-        }
-
-        return key.toString();
     }
 }

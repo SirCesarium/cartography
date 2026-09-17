@@ -2,17 +2,11 @@ package net.sircesarium.cartography.util;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
 import net.sircesarium.cartography.data.storage.ChunkData;
 
 public class ChunkScanner {
@@ -61,30 +55,30 @@ public class ChunkScanner {
             BlockState state = chunk.getBlockState(pos);
             FluidState fluid = state.getFluidState();
 
-            BlockType type = classify(state, fluid);
+            BlockType type = BlockClassifier.classify(state, fluid);
 
             switch (type) {
                 case TERRAIN -> {
-                    terrainBlock = getRegistryName(state.getBlock());
+                    terrainBlock = BlockClassifier.getRegistryName(state.getBlock());
                     terrainY = y;
                 }
                 case WATER -> {
                     waterDepth++;
 
                     if (waterBlock == null) {
-                        waterBlock = getRegistryName(fluid.getType());
+                        waterBlock = BlockClassifier.getRegistryName(fluid.getType());
                         waterY = y;
                     }
                 }
                 case VEGETATION -> {
                     if (vegetationBlock == null) {
-                        vegetationBlock = getRegistryName(state.getBlock());
+                        vegetationBlock = BlockClassifier.getRegistryName(state.getBlock());
                         vegetationY = y;
                     }
                 }
                 case DECORATIONS -> {
                     if (decorationsBlock == null) {
-                        decorationsBlock = getRegistryName(state.getBlock());
+                        decorationsBlock = BlockClassifier.getRegistryName(state.getBlock());
                         decorationsY = y;
                     }
                 }
@@ -120,37 +114,6 @@ public class ChunkScanner {
         if (changed) {
             data.markDirty();
         }
-    }
-
-    static BlockType classify(BlockState state, FluidState fluid) {
-        if (state.isAir()) return BlockType.AIR;
-        if (fluid.getType() == Fluids.WATER || fluid.getType() == Fluids.FLOWING_WATER) return BlockType.WATER;
-        if (state.canOcclude()) return BlockType.TERRAIN;
-        if (isPlant(state)) return BlockType.VEGETATION;
-
-        return BlockType.DECORATIONS;
-    }
-
-    private static boolean isPlant(BlockState state) {
-        return state.is(BlockTags.FLOWERS)
-                || state.is(BlockTags.LEAVES)
-                || state.is(BlockTags.CROPS)
-                || state.is(BlockTags.SMALL_FLOWERS)
-                || state.is(BlockTags.TALL_FLOWERS);
-    }
-
-    private static String getRegistryName(Object obj) {
-        ResourceLocation key;
-
-        if (obj instanceof Block block) {
-            key = BuiltInRegistries.BLOCK.getKey(block);
-        } else if (obj instanceof Fluid fluid) {
-            key = BuiltInRegistries.FLUID.getKey(fluid);
-        } else {
-            return "unknown";
-        }
-
-        return key.toString();
     }
 
     private static String getBiomeName(ChunkAccess chunk, int worldX, int y, int worldZ) {

@@ -1,7 +1,5 @@
 package net.sircesarium.cartography.compat.sable;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -9,6 +7,7 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.server.level.ServerLevel;
 import net.sircesarium.cartography.Cartography;
 import net.sircesarium.cartography.data.storage.SubLevelData;
+import net.sircesarium.cartography.helpers.FileIOHelper;
 import net.sircesarium.cartography.manager.SubLevelManager;
 import net.sircesarium.cartography.util.SubLevelScanner;
 
@@ -63,6 +62,8 @@ public class SableSubLevelObserver implements SubLevelObserver {
 
             data.saveAllChunks();
 
+            if (closed) return;
+
             Cartography.LOGGER.info("[Cartography] Chunks saved. Deleting folder async...");
 
             Path basePath = data.getBasePath();
@@ -70,7 +71,7 @@ public class SableSubLevelObserver implements SubLevelObserver {
             CompletableFuture.runAsync(() -> {
                 Cartography.LOGGER.info("[Cartography] Deleting {}...", basePath);
 
-                deleteDir(basePath);
+                FileIOHelper.deleteRecursive(basePath);
 
                 Cartography.LOGGER.info("[Cartography] Delete done.");
             });
@@ -99,11 +100,10 @@ public class SableSubLevelObserver implements SubLevelObserver {
 
                 data.updatePose(
                         subLevel.logicalPose().position(),
-                        subLevel.logicalPose().orientation(),
                         subLevel.logicalPose().scale()
                 );
 
-                data.saveIfDirty();
+                data.saveAllChunks();
 
                 if (data.isPoseDirty()) {
                     data.savePose();
@@ -114,22 +114,4 @@ public class SableSubLevelObserver implements SubLevelObserver {
         }
     }
 
-    private static void deleteDir(Path dir) {
-        try {
-            if (Files.exists(dir)) {
-                try (var stream = Files.walk(dir)) {
-                    stream.sorted(java.util.Comparator.reverseOrder())
-                            .forEach(path -> {
-                                try {
-                                    Files.deleteIfExists(path);
-                                } catch (IOException e) {
-                                    Cartography.LOGGER.error("Failed to delete {}", path, e);
-                                }
-                            });
-                }
-            }
-        } catch (IOException e) {
-            Cartography.LOGGER.error("Failed to delete sublevel dir {}", dir, e);
-        }
-    }
 }
