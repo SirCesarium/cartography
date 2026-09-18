@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.sircesarium.cartography.data.Waypoint;
+import net.sircesarium.cartography.data.WaypointVisibility;
 import net.sircesarium.cartography.util.NBTData;
 
 import java.util.List;
@@ -83,6 +84,16 @@ public class WaypointData extends NBTData {
     public boolean hasWaypointWithId(UUID id) {
         return waypoints.stream()
                 .anyMatch(wp -> wp.getId().equals(id));
+    }
+
+    public List<Waypoint> getVisibleTo(UUID playerId) {
+        return waypoints.stream()
+                .filter(wp -> {
+                    if (wp.getVisibility() == WaypointVisibility.PUBLIC) return true;
+                    if (wp.getVisibility() == WaypointVisibility.PRIVATE) return wp.getAuthor().equals(playerId);
+                    return wp.getVisibleTo().contains(playerId);
+                })
+                .toList();
     }
 
     @Override
