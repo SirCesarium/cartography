@@ -30,11 +30,13 @@ public class WaypointData extends NBTData {
         if (waypoints.removeIf(Waypoint::isExpired)) {
             markDirty();
         }
+
         return waypoints;
     }
 
     public void addWaypoint(BlockPos pos, ResourceKey<Level> dimension, String name, Integer color, ResourceLocation icon, UUID author, Long expiresAt) {
         waypoints.add(new Waypoint(pos, dimension, name, color, icon, author, expiresAt));
+
         markDirty();
     }
 
@@ -42,6 +44,7 @@ public class WaypointData extends NBTData {
         if (waypoints.stream().anyMatch(wp -> wp.getId().equals(id))) return;
 
         waypoints.add(new Waypoint(id, pos, dimension, name, color, icon, author, expiresAt));
+
         markDirty();
     }
 
@@ -49,10 +52,22 @@ public class WaypointData extends NBTData {
         for (int i = 0; i < waypoints.size(); i++) {
             if (waypoints.get(i).getId().equals(updated.getId())) {
                 waypoints.set(i, updated);
+
                 markDirty();
+
                 return;
             }
         }
+    }
+
+    public boolean removeWaypoint(UUID id) {
+        if (waypoints.removeIf(wp -> wp.getId().equals(id))) {
+            markDirty();
+
+            return true;
+        }
+
+        return false;
     }
 
     public boolean hasWaypointAt(BlockPos pos, ResourceKey<Level> dimension) {
