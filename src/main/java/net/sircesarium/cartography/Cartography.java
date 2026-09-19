@@ -10,6 +10,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.sircesarium.cartography.config.CartographyServerConfig;
+import net.sircesarium.cartography.data.pin.PinRegistry;
 
 @Mod(Cartography.MODID)
 public class Cartography {
@@ -22,6 +23,7 @@ public class Cartography {
 
     public Cartography(ModContainer modContainer) {
         modContainer.registerConfig(ModConfig.Type.SERVER, CartographyServerConfig.SPEC);
+        PinRegistry.register(modContainer.getEventBus());
 
         if (ModList.get().isLoaded("sable")) {
             SableCompatInit.init();

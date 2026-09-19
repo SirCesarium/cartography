@@ -33,13 +33,16 @@ public class PinStateManager extends SimpleJsonResourceReloadListener {
 
         for (var entry : elements.entrySet()) {
             try {
-                result.put(entry.getKey(), parseStates(entry.getValue()));
+                List<PinState> parsed = parseStates(entry.getValue());
+                result.put(entry.getKey(), parsed);
+                Cartography.LOGGER.info("Loaded pin state: {} ({} states)", entry.getKey(), parsed.size());
             } catch (Exception e) {
-                Cartography.LOGGER.warn("Failed to parse pin state {}: {}", entry.getKey(), e.getMessage());
+                Cartography.LOGGER.warn("Failed to parse pin state {}: ", entry.getKey(), e);
             }
         }
 
         states = result;
+        Cartography.LOGGER.info("Loaded {} pin states", states.size());
     }
 
     private List<PinState> parseStates(JsonElement element) {
@@ -73,8 +76,8 @@ public class PinStateManager extends SimpleJsonResourceReloadListener {
         if (all.size() == 1) return all.getFirst();
 
         for (PinState state : all) {
-            if (state.condition() == null) return state;
-            if (evaluateCondition(state.condition(), pinData)) return state;
+            if (state.condition().isEmpty()) return state;
+            if (evaluateCondition(state.condition().get(), pinData)) return state;
         }
 
         return all.getFirst();

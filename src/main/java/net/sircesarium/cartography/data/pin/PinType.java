@@ -1,5 +1,8 @@
 package net.sircesarium.cartography.data.pin;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import java.util.List;
 
 public record PinType(
@@ -8,6 +11,12 @@ public record PinType(
         List<String> data
 ) {
     public static final int DEFAULT_LIFETIME = 300;
+
+    public static final Codec<PinType> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.STRING.fieldOf("type").forGetter(PinType::type),
+            Codec.INT.optionalFieldOf("lifetime", DEFAULT_LIFETIME).forGetter(PinType::lifetime),
+            Codec.STRING.listOf().optionalFieldOf("data", List.of()).forGetter(PinType::data)
+    ).apply(instance, PinType::new));
     public static final String DUMMY = "dummy";
     public static final String BLOCK = "block";
     public static final String MOB = "mob";
