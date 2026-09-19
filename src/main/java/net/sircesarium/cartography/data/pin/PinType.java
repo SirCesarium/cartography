@@ -1,9 +1,12 @@
 package net.sircesarium.cartography.data.pin;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import java.util.List;
+
+import net.sircesarium.cartography.data.pin.context.PinContextRegistry;
 
 public record PinType(
         String type,
@@ -12,11 +15,11 @@ public record PinType(
 ) {
     public static final int DEFAULT_LIFETIME = 300;
 
-    public static final Codec<PinType> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final Codec<PinType> CODEC = RecordCodecBuilder.<PinType>create(instance -> instance.group(
             Codec.STRING.fieldOf("type").forGetter(PinType::type),
             Codec.INT.optionalFieldOf("lifetime", DEFAULT_LIFETIME).forGetter(PinType::lifetime),
             Codec.STRING.listOf().optionalFieldOf("data", List.of()).forGetter(PinType::data)
-    ).apply(instance, PinType::new));
+    ).apply(instance, PinType::new)).flatXmap(PinType::validate, PinType::validate);
 
     public static final String DUMMY = "dummy";
     public static final String BLOCK = "block";
@@ -45,5 +48,25 @@ public record PinType(
 
     public static PinType dummy(int lifetime) {
         return new PinType(DUMMY, lifetime, List.of());
+    }
+
+    private static DataResult<PinType> validate(PinType pt) {
+        if (!List.of(DUMMY, BLOCK, MOB, ITEM).contains(pt.type())) {
+            return DataResult.error(() -> "Unknown pin type: '" + pt.type() + "'. Must be one of: dummy, block, mob, item");
+        }
+
+        if (pt.isDummy() && !pt.data().isEmpty()) {
+            return DataResult.error(() -> "Dummy pin type cannot have data");
+        }
+
+        for (String getter : pt.data()) {
+            try {
+                PinContextRegistry.getGetter(pt.type(), getter);
+            } catch (IllegalArgumentException e) {
+                return DataResult.error(e::getMessage);
+            }
+        }
+
+        return DataResult.success(pt);
     }
 }
