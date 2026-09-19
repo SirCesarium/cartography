@@ -148,6 +148,16 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
+tasks.register('generatePinSchemas', GeneratePinSchemasTask) {
+    outputDir = file('schemas/pins')
+    classpath.from(project.sourceSets.main.output.classesDirs)
+    classpath.from(project.sourceSets.main.compileClasspath)
+}
+
+tasks.named('compileJava').configure {
+    finalizedBy(tasks.named('generatePinSchemas'))
+}
+
 idea {
     module {
         downloadSources = true

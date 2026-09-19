@@ -1,0 +1,70 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Cartography Pin State",
+    "description": "Visual state for a pin type. Loaded from resource packs.",
+    "oneOf": [
+        {
+            "type": "object",
+            "properties": {
+                "condition": {
+                    "type": "string",
+                    "description": "Template condition for this state"
+                },
+                "color": {
+                    "type": "string",
+                    "description": "Hex color for the pin marker"
+                },
+                "icon": {
+                    "type": "string",
+                    "description": "Registry name of the icon"
+                },
+                "mapIcon": {
+                    "type": "string",
+                    "description": "Registry name of the map icon"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Display name override"
+                }
+            },
+            "required": [
+                "color",
+                "icon"
+            ]
+        },
+        {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "condition": {
+                        "type": "string",
+                        "description": "Template condition for this state"
+                    },
+                    "color": {
+                        "type": "string",
+                        "description": "Hex color for the pin marker"
+                    },
+                    "icon": {
+                        "type": "string",
+                        "description": "Registry name of the icon"
+                    },
+                    "mapIcon": {
+                        "type": "string",
+                        "description": "Registry name of the map icon"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Display name override"
+                    }
+                },
+                "required": [
+                    "color",
+                    "icon"
+                ]
+            },
+            "minItems": 1,
+            "description": "Multiple conditional states"
+        }
+    ]
+}

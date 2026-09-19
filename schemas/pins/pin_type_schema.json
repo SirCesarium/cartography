@@ -1,0 +1,188 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Cartography Pin Type",
+    "description": "Defines a pin type. Loaded from datapacks.",
+    "type": "object",
+    "required": [
+        "type"
+    ],
+    "properties": {
+        "type": {
+            "type": "string",
+            "enum": [
+                "block",
+                "item",
+                "mob",
+                "player",
+                "dummy"
+            ]
+        },
+        "lifetime": {
+            "type": "integer",
+            "description": "Lifetime in seconds",
+            "default": 300,
+            "minimum": 1
+        },
+        "data": {
+            "type": "array",
+            "description": "Getter names to resolve from context"
+        }
+    },
+    "allOf": [
+        {
+            "if": {
+                "properties": {
+                    "type": {
+                        "const": "dummy"
+                    }
+                }
+            },
+            "then": {
+                "not": {
+                    "required": [
+                        "data"
+                    ]
+                },
+                "additionalProperties": false
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "type": {
+                        "const": "block"
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "block",
+                                "model",
+                                "itemModel",
+                                "isRedstone",
+                                "resourceLocation",
+                                "isAir",
+                                "requiresTool"
+                            ]
+                        },
+                        "uniqueItems": true
+                    }
+                }
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "type": {
+                        "const": "item"
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "count",
+                                "displayName",
+                                "maxStackSize",
+                                "model",
+                                "resourceLocation",
+                                "isDamaged",
+                                "isFood",
+                                "rarity",
+                                "damage",
+                                "maxDamage",
+                                "texture",
+                                "isStackable",
+                                "isEnchanted",
+                                "isDamageable"
+                            ]
+                        },
+                        "uniqueItems": true
+                    }
+                }
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "type": {
+                        "const": "mob"
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "name",
+                                "type",
+                                "effectCount",
+                                "isOnFire",
+                                "isBaby",
+                                "isTamed",
+                                "isLeashed",
+                                "isInWater",
+                                "armor",
+                                "isSitting",
+                                "health",
+                                "maxHealth",
+                                "isHostile",
+                                "hasEffects",
+                                "isNoAi",
+                                "isSleeping"
+                            ]
+                        },
+                        "uniqueItems": true
+                    }
+                }
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "type": {
+                        "const": "player"
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "name",
+                                "isSwimming",
+                                "isFlying",
+                                "foodLevel",
+                                "saturation",
+                                "experienceLevel",
+                                "experienceProgress",
+                                "isSpectator",
+                                "isScoping",
+                                "health",
+                                "maxHealth",
+                                "isCreative",
+                                "isSleeping"
+                            ]
+                        },
+                        "uniqueItems": true
+                    }
+                }
+            }
+        }
+    ]
+}
