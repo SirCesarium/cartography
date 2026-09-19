@@ -11,10 +11,10 @@
             "type": "string",
             "enum": [
                 "block",
+                "dummy",
                 "item",
                 "mob",
-                "player",
-                "dummy"
+                "player"
             ]
         },
         "lifetime": {
@@ -62,12 +62,12 @@
                             "type": "string",
                             "enum": [
                                 "block",
-                                "model",
-                                "itemModel",
-                                "isRedstone",
-                                "resourceLocation",
                                 "isAir",
-                                "requiresTool"
+                                "isRedstone",
+                                "itemModel",
+                                "model",
+                                "requiresTool",
+                                "resourceLocation"
                             ]
                         },
                         "uniqueItems": true
@@ -91,19 +91,19 @@
                             "type": "string",
                             "enum": [
                                 "count",
+                                "damage",
                                 "displayName",
+                                "isDamageable",
+                                "isDamaged",
+                                "isEnchanted",
+                                "isFood",
+                                "isStackable",
+                                "maxDamage",
                                 "maxStackSize",
                                 "model",
-                                "resourceLocation",
-                                "isDamaged",
-                                "isFood",
                                 "rarity",
-                                "damage",
-                                "maxDamage",
-                                "texture",
-                                "isStackable",
-                                "isEnchanted",
-                                "isDamageable"
+                                "resourceLocation",
+                                "texture"
                             ]
                         },
                         "uniqueItems": true
@@ -126,22 +126,22 @@
                         "items": {
                             "type": "string",
                             "enum": [
-                                "name",
-                                "type",
-                                "effectCount",
-                                "isOnFire",
-                                "isBaby",
-                                "isTamed",
-                                "isLeashed",
-                                "isInWater",
                                 "armor",
-                                "isSitting",
-                                "health",
-                                "maxHealth",
-                                "isHostile",
+                                "effectCount",
                                 "hasEffects",
+                                "health",
+                                "isBaby",
+                                "isHostile",
+                                "isInWater",
+                                "isLeashed",
                                 "isNoAi",
-                                "isSleeping"
+                                "isOnFire",
+                                "isSitting",
+                                "isSleeping",
+                                "isTamed",
+                                "maxHealth",
+                                "name",
+                                "type"
                             ]
                         },
                         "uniqueItems": true
@@ -164,19 +164,19 @@
                         "items": {
                             "type": "string",
                             "enum": [
-                                "name",
-                                "isSwimming",
-                                "isFlying",
-                                "foodLevel",
-                                "saturation",
                                 "experienceLevel",
                                 "experienceProgress",
-                                "isSpectator",
-                                "isScoping",
+                                "foodLevel",
                                 "health",
-                                "maxHealth",
                                 "isCreative",
-                                "isSleeping"
+                                "isFlying",
+                                "isScoping",
+                                "isSleeping",
+                                "isSpectator",
+                                "isSwimming",
+                                "maxHealth",
+                                "name",
+                                "saturation"
                             ]
                         },
                         "uniqueItems": true

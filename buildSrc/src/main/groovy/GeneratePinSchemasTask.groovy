@@ -29,7 +29,7 @@ abstract class GeneratePinSchemasTask extends DefaultTask {
         logger.lifecycle("Generated pin schemas: ${contexts.keySet()}")
     }
 
-    private Map<String, Map<String, Map<String, String>>> scanContexts() {
+    Map<String, Map<String, Map<String, String>>> scanContexts() {
         Map<String, Map<String, Map<String, String>>> result = [:]
 
         URL[] urls = classpath.collect { it.toURI().toURL() } as URL[]
@@ -89,7 +89,7 @@ abstract class GeneratePinSchemasTask extends DefaultTask {
         ]
 
         contexts.each { String name, Map<String, Map<String, String>> getters ->
-            List<String> validGetters = getters.keySet().toList()
+            List<String> validGetters = getters.keySet().toList().sort()
 
             rules << [
                 'if':   [properties: [type: [const: name]]],
@@ -104,7 +104,7 @@ abstract class GeneratePinSchemasTask extends DefaultTask {
             type        : 'object',
             required    : ['type'],
             properties  : [
-                type     : [type: 'string', enum: contexts.keySet().toList() + ['dummy']],
+                type     : [type: 'string', enum: (contexts.keySet().toList() + ['dummy']).sort()],
                 lifetime : [type: 'integer', description: 'Lifetime in seconds', default: 300, minimum: 1],
                 data     : [type: 'array', description: 'Getter names to resolve from context']
             ],
