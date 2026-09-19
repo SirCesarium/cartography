@@ -9,6 +9,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface PinGetter {
     String value();
+
     String type();
+
     String description();
 }
