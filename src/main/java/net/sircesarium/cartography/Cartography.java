@@ -26,21 +26,23 @@ public class Cartography {
         PinRegistry.register(modContainer.getEventBus());
 
         if (ModList.get().isLoaded("sable")) {
-            SableCompatInit.init();
+            initCompat("net.sircesarium.cartography.compat.sable.SableCompat", "Sable");
+        }
+
+        if (ModList.get().isLoaded("create")) {
+            initCompat("net.sircesarium.cartography.compat.create.CreateCompat", "Create");
         }
     }
 
-    private static class SableCompatInit {
-        static void init() {
-            try {
-                Class.forName("net.sircesarium.cartography.compat.sable.SableCompat")
-                        .getMethod("init")
-                        .invoke(null);
-                
-                LOGGER.info("Sable compat initialized");
-            } catch (Exception e) {
-                LOGGER.error("Failed to initialize Sable compat", e);
-            }
+    private static void initCompat(String className, String modName) {
+        try {
+            Class.forName(className)
+                    .getMethod("init")
+                    .invoke(null);
+
+            LOGGER.info("{} compat initialized", modName);
+        } catch (Exception e) {
+            LOGGER.error("Failed to initialize {} compat", modName, e);
         }
     }
 }

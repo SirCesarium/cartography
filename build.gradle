@@ -103,6 +103,8 @@ dependencies {
     localRuntime("dev.ryanhcode.sable-companion:sable-companion-common-1.21.1:1.6.0")
 
     // Create
+    compileOnly("com.simibubi.create:create-1.21.1:6.0.10-280:slim") { transitive = false }
+    compileOnly("net.createmod.ponder:ponder-neoforge:1.0.81+mc1.21.1")
     localRuntime("com.simibubi.create:create-1.21.1:6.0.10-280:slim") { transitive = false }
     localRuntime("net.createmod.ponder:ponder-neoforge:1.0.81+mc1.21.1")
     localRuntime("dev.engine-room.flywheel:flywheel-neoforge-1.21.1:1.0.6")
