@@ -15,7 +15,7 @@ public class PlayerContext implements PinDataContext {
         if (entity instanceof Player player) {
             return player;
         }
-        
+
         throw new IllegalArgumentException(
                 "player context requires a Player, got: " + entity.getClass().getSimpleName()
         );

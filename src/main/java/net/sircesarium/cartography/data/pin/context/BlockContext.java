@@ -1,6 +1,7 @@
 package net.sircesarium.cartography.data.pin.context;
 
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
 
 @PinContext("block")
@@ -19,6 +20,20 @@ public class BlockContext implements PinDataContext {
     @PinGetter(value = "block", type = "string", description = "Block name")
     public String block(BlockState state) {
         return state.getBlock().toString();
+    }
+
+    @PinGetter(value = "model", type = "resource_location", description = "Block model resource location")
+    public String model(BlockState state) {
+        ResourceLocation id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+
+        return "minecraft:block/" + id.getPath();
+    }
+
+    @PinGetter(value = "itemModel", type = "resource_location", description = "Block item model resource location")
+    public String itemModel(BlockState state) {
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(state.getBlock().asItem());
+
+        return "minecraft:item/" + id.getPath();
     }
 
     @PinGetter(value = "isAir", type = "boolean", description = "Whether the block is air")

@@ -1,14 +1,13 @@
 package net.sircesarium.cartography.data.pin;
 
-import java.util.Map;
+import java.util.List;
 
 public record PinType(
         String type,
-        String icon,
-        int defaultTtl,
-        Map<String, String> pinData
+        int lifetime,
+        List<String> data
 ) {
-    public static final int DEFAULT_TTL = 300;
+    public static final int DEFAULT_LIFETIME = 300;
     public static final String DUMMY = "dummy";
     public static final String BLOCK = "block";
     public static final String MOB = "mob";
@@ -30,11 +29,11 @@ public record PinType(
         return ITEM.equals(type);
     }
 
-    public static PinType dummy(String icon) {
-        return new PinType(DUMMY, icon, DEFAULT_TTL, Map.of());
+    public static PinType dummy() {
+        return new PinType(DUMMY, DEFAULT_LIFETIME, List.of());
     }
 
-    public static PinType dummy(String icon, int defaultTtl) {
-        return new PinType(DUMMY, icon, defaultTtl, Map.of());
+    public static PinType dummy(int lifetime) {
+        return new PinType(DUMMY, lifetime, List.of());
     }
 }
