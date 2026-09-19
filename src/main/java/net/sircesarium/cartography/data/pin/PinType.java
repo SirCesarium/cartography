@@ -17,6 +17,7 @@ public record PinType(
             Codec.INT.optionalFieldOf("lifetime", DEFAULT_LIFETIME).forGetter(PinType::lifetime),
             Codec.STRING.listOf().optionalFieldOf("data", List.of()).forGetter(PinType::data)
     ).apply(instance, PinType::new));
+
     public static final String DUMMY = "dummy";
     public static final String BLOCK = "block";
     public static final String MOB = "mob";
