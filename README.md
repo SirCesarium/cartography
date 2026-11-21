@@ -93,4 +93,4 @@ To launch a dedicated test server:
 
 ## License
 
-[MIT](./LICENSE)
+[LGPL-2.1](./LICENSE)
