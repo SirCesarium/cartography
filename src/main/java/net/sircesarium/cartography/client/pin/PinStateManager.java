@@ -22,7 +22,7 @@ public class PinStateManager extends SimpleJsonResourceReloadListener {
     private static Map<ResourceLocation, List<PinState>> states = Map.of();
 
     public PinStateManager() {
-        super(GSON, "cartography/pin_states");
+        super(GSON, "pin_states");
     }
 
     @Override

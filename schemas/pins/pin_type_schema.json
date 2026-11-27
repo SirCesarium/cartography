@@ -139,6 +139,7 @@
                                 "isSitting",
                                 "isSleeping",
                                 "isTamed",
+                                "isVehicle",
                                 "maxHealth",
                                 "name",
                                 "type"

@@ -1,6 +1,10 @@
 package net.sircesarium.cartography.data.pin.context;
 
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Leashable;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -9,6 +13,9 @@ import net.minecraft.world.entity.monster.Monster;
 
 @PinContext("mob")
 public class MobContext implements PinDataContext {
+
+    public static final TagKey<EntityType<?>> VEHICLES =
+            TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath("cartography", "vehicles"));
 
     @Override
     public String getContextName() {
@@ -116,5 +123,10 @@ public class MobContext implements PinDataContext {
             return mob.isNoAi();
         }
         return false;
+    }
+
+    @PinGetter(value = "isVehicle", type = "boolean", description = "Whether the entity is a vehicle (boat, minecart)")
+    public boolean isVehicle(Entity entity) {
+        return entity.getType().is(VEHICLES);
     }
 }
