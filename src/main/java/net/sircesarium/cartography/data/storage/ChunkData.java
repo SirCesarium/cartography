@@ -6,6 +6,7 @@ import lombok.Getter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.sircesarium.cartography.data.layers.Layer;
+import net.sircesarium.cartography.data.layers.LightLayer;
 import net.sircesarium.cartography.data.layers.WaterLayer;
 import net.sircesarium.cartography.util.NBTData;
 
@@ -19,6 +20,7 @@ public class ChunkData extends NBTData {
     private Layer vegetation;
     private Layer decorations;
     private Layer biome;
+    private LightLayer light;
 
     public ChunkData(ServerLevel level, int chunkX, int chunkZ) {
         super(level, "chunks/" + level.dimension().location().getPath() + "/c." + chunkX + "." + chunkZ + ".dat");
@@ -42,6 +44,7 @@ public class ChunkData extends NBTData {
         this.vegetation = new Layer();
         this.decorations = new Layer();
         this.biome = new Layer();
+        this.light = new LightLayer();
     }
 
     @Override
@@ -53,6 +56,7 @@ public class ChunkData extends NBTData {
         tag.put("vegetation", vegetation.toNBT());
         tag.put("decorations", decorations.toNBT());
         tag.put("biome", biome.toNBT());
+        tag.put("light", light.toNBT());
 
         return tag;
     }
@@ -64,5 +68,6 @@ public class ChunkData extends NBTData {
         this.vegetation = Layer.load(tag.getCompound("vegetation"));
         this.decorations = Layer.load(tag.getCompound("decorations"));
         this.biome = Layer.load(tag.getCompound("biome"));
+        this.light = LightLayer.load(tag.getCompound("light"));
     }
 }

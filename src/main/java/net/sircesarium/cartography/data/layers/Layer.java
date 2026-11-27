@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 public class Layer {
     public static final int CHUNK_SIZE = 16;
-    protected static final int BLOCKS_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE;
+    public static final int BLOCKS_PER_CHUNK = CHUNK_SIZE * CHUNK_SIZE;
 
     protected List<String> palette;
     protected byte[] blocks;
