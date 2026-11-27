@@ -3,17 +3,11 @@ package net.sircesarium.cartography.data.pin.context;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PinContextRegistry {
-    private static final Map<String, PinDataContext> CONTEXTS = new HashMap<>();
-    private static final Map<String, Map<String, GetterEntry>> GETTERS = new HashMap<>();
-
-    static {
-        register(new MobContext());
-        register(new ItemContext());
-        register(new BlockContext());
-        register(new PlayerContext());
-    }
+    private static final Map<String, PinDataContext> CONTEXTS = new ConcurrentHashMap<>();
+    private static final Map<String, Map<String, GetterEntry>> GETTERS = new ConcurrentHashMap<>();
 
     public static void register(PinDataContext context) {
         String name = context.getContextName();
