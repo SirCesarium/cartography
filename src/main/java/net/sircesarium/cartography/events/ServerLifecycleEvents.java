@@ -44,7 +44,9 @@ public class ServerLifecycleEvents {
     @SubscribeEvent
     public static void onServerStopping(ServerStoppingEvent event) {
         ChunkManager.saveAll();
+        ChunkManager.clear();
         SubLevelManager.saveAll();
+        SubLevelManager.clear();
         WaypointManager.saveAll();
         WaypointManager.clear();
         PinManager.saveAndClear();

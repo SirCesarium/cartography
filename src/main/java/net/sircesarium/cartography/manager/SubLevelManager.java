@@ -28,4 +28,8 @@ public class SubLevelManager {
     public static void saveAll() {
         cache.values().forEach(SubLevelData::saveAllChunks);
     }
+
+    public static void clear() {
+        cache.clear();
+    }
 }

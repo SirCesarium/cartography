@@ -38,6 +38,10 @@ public class ChunkManager {
         cache.values().forEach(ChunkData::saveIfDirty);
     }
 
+    public static void clear() {
+        cache.clear();
+    }
+
     public static void scanAndSave(ServerLevel level, ChunkPos pos) {
         ChunkData data = getOrCreate(level, pos);
         ChunkAccess chunk = level.getChunk(pos.x, pos.z);
@@ -63,6 +67,9 @@ public class ChunkManager {
             level.getServer().getTickCount() + 1,
             () -> {
                 ChunkPos pos = new ChunkPos(blockPos);
+
+                if (!level.hasChunk(pos.x, pos.z)) return;
+
                 ChunkData data = getOrCreate(level, pos);
                 ChunkAccess chunk = level.getChunk(pos.x, pos.z);
                 int localX = blockPos.getX() - chunk.getPos().getMinBlockX();
