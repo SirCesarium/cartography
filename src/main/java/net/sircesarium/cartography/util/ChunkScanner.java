@@ -3,6 +3,8 @@ package net.sircesarium.cartography.util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.block.state.BlockState;
@@ -11,7 +13,7 @@ import net.sircesarium.cartography.data.storage.ChunkData;
 
 public class ChunkScanner {
 
-    public static void scanChunk(ChunkAccess chunk, ChunkData data) {
+    public static void scanChunk(ServerLevel level, ChunkAccess chunk, ChunkData data) {
         int topY = (chunk.getHighestFilledSectionIndex() + 1) * 16 - 1;
         int minSectionY = chunk.getMinSection();
         int chunkMinX = chunk.getPos().getMinBlockX();
@@ -22,21 +24,21 @@ public class ChunkScanner {
                 int worldX = chunkMinX + x;
                 int worldZ = chunkMinZ + z;
 
-                scanColumn(chunk, x, z, worldX, worldZ, topY, minSectionY, data);
+                scanColumn(level, chunk, x, z, worldX, worldZ, topY, minSectionY, data);
             }
         }
     }
 
-    public static void scanSingleColumn(ChunkAccess chunk, int worldX, int worldZ, ChunkData data) {
+    public static void scanSingleColumn(ServerLevel level, ChunkAccess chunk, int worldX, int worldZ, ChunkData data) {
         int localX = worldX - chunk.getPos().getMinBlockX();
         int localZ = worldZ - chunk.getPos().getMinBlockZ();
         int topY = (chunk.getHighestFilledSectionIndex() + 1) * 16 - 1;
         int minSectionY = chunk.getMinSection();
 
-        scanColumn(chunk, localX, localZ, worldX, worldZ, topY, minSectionY, data);
+        scanColumn(level, chunk, localX, localZ, worldX, worldZ, topY, minSectionY, data);
     }
 
-    private static void scanColumn(ChunkAccess chunk, int localX, int localZ,
+    private static void scanColumn(ServerLevel level, ChunkAccess chunk, int localX, int localZ,
                                    int worldX, int worldZ, int topY, int minSectionY,
                                    ChunkData data) {
         String terrainBlock = null;
@@ -95,6 +97,8 @@ public class ChunkScanner {
 
         if (terrainBlock != null) {
             changed |= data.getTerrain().setBlock(localX, localZ, terrainBlock, terrainY);
+            int blockLight = level.getBrightness(LightLayer.BLOCK, new BlockPos(worldX, terrainY + 1, worldZ));
+            changed |= data.getLight().setLight(localX, localZ, blockLight);
         }
 
         if (vegetationBlock != null) {
@@ -122,5 +126,31 @@ public class ChunkScanner {
         ResourceKey<Biome> key = biomeHolder.unwrapKey().orElse(null);
 
         return key != null ? key.location().toString() : "unknown";
+    }
+
+    /** Scans only the light at a single column. Used for delayed re-scan after block events. */
+    public static void scanLightColumn(ServerLevel level, ChunkAccess chunk, int localX, int localZ,
+                                       int worldX, int worldZ, ChunkData data) {
+        int topY = (chunk.getHighestFilledSectionIndex() + 1) * 16 - 1;
+        int minSectionY = chunk.getMinSection();
+
+        int terrainY = 0;
+
+        for (int y = topY; y >= minSectionY * 16; y--) {
+            BlockState state = chunk.getBlockState(new BlockPos(worldX, y, worldZ));
+
+            if (state.canOcclude()) {
+                terrainY = y;
+                break;
+            }
+        }
+
+        if (terrainY != 0) {
+            int blockLight = level.getBrightness(LightLayer.BLOCK, new BlockPos(worldX, terrainY + 1, worldZ));
+
+            if (data.getLight().setLight(localX, localZ, blockLight)) {
+                data.markDirty();
+            }
+        }
     }
 }

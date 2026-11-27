@@ -42,7 +42,7 @@ public class ChunkManager {
         ChunkData data = getOrCreate(level, pos);
         ChunkAccess chunk = level.getChunk(pos.x, pos.z);
 
-        ChunkScanner.scanChunk(chunk, data);
+        ChunkScanner.scanChunk(level, chunk, data);
 
         data.saveIfDirty();
     }
@@ -52,8 +52,26 @@ public class ChunkManager {
         ChunkData data = getOrCreate(level, pos);
         ChunkAccess chunk = level.getChunk(pos.x, pos.z);
 
-        ChunkScanner.scanSingleColumn(chunk, blockPos.getX(), blockPos.getZ(), data);
+        ChunkScanner.scanSingleColumn(level, chunk, blockPos.getX(), blockPos.getZ(), data);
 
         data.saveIfDirty();
+    }
+
+    /** Scans only the light at a single column one tick later, after the engine recalculates it. */
+    public static void scanLightColumnAndSave(ServerLevel level, BlockPos blockPos) {
+        level.getServer().tell(new net.minecraft.server.TickTask(
+            level.getServer().getTickCount() + 1,
+            () -> {
+                ChunkPos pos = new ChunkPos(blockPos);
+                ChunkData data = getOrCreate(level, pos);
+                ChunkAccess chunk = level.getChunk(pos.x, pos.z);
+                int localX = blockPos.getX() - chunk.getPos().getMinBlockX();
+                int localZ = blockPos.getZ() - chunk.getPos().getMinBlockZ();
+
+                ChunkScanner.scanLightColumn(level, chunk, localX, localZ,
+                    blockPos.getX(), blockPos.getZ(), data);
+                data.saveIfDirty();
+            }
+        ));
     }
 }

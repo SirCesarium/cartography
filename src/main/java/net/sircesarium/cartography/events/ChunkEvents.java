@@ -41,6 +41,7 @@ public class ChunkEvents {
         if (level == null) return;
 
         ChunkManager.scanColumnAndSave(level, event.getPos());
+        ChunkManager.scanLightColumnAndSave(level, event.getPos());
     }
 
     @SubscribeEvent
@@ -49,5 +50,6 @@ public class ChunkEvents {
         if (level == null) return;
 
         ChunkManager.scanColumnAndSave(level, event.getPos());
+        ChunkManager.scanLightColumnAndSave(level, event.getPos());
     }
 }
