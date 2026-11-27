@@ -30,6 +30,8 @@ public class WaypointCommands {
         return Commands.literal("waypoint")
                 .then(Commands.literal("add")
                         .then(Commands.argument("name", StringArgumentType.string())
+                                // pos optional: with explicit coords or at player's feet
+                                .executes(WaypointCommands::addWaypointAtSelf)
                                 .then(Commands.argument("pos", BlockPosArgument.blockPos())
                                         .executes(WaypointCommands::addWaypoint))))
                 .then(Commands.literal("remove")
@@ -42,9 +44,18 @@ public class WaypointCommands {
                 .build();
     }
 
+    private static int addWaypointAtSelf(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
+        return addWaypointAt(ctx, player.blockPosition());
+    }
+
     private static int addWaypoint(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
-        String name = StringArgumentType.getString(ctx, "name");
         BlockPos pos = BlockPosArgument.getBlockPos(ctx, "pos");
+        return addWaypointAt(ctx, pos);
+    }
+
+    private static int addWaypointAt(CommandContext<CommandSourceStack> ctx, BlockPos pos) throws CommandSyntaxException {
+        String name = StringArgumentType.getString(ctx, "name");
         ServerLevel level = ctx.getSource().getLevel();
         ServerPlayer player = ctx.getSource().getPlayerOrException();
         ResourceKey<Level> dimension = level.dimension();
