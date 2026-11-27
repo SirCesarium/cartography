@@ -1,4 +1,4 @@
-package net.sircesarium.cartography.compat.create;
+package net.sircesarium.cartography.plugins.builtin.create;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -110,8 +110,8 @@ public class CreateTrainManager {
                     continue;
 
                 Optional<BlockPos> pos = train.getPositionInDimension(level.dimension());
-                if (pos.isEmpty())
-                    continue;
+
+                if (pos.isEmpty()) continue;
 
                 if (!newSnapshot.containsKey(train.id))
                     newSnapshot.put(train.id, CreateTrainInfo.from(train, level.dimension()));
@@ -165,8 +165,7 @@ public class CreateTrainManager {
     private static void tickTrackGraphs() {
         int version = Create.RAILWAYS.version;
 
-        if (version == lastGraphChecksum)
-            return;
+        if (version == lastGraphChecksum) return;
 
         lastGraphChecksum = version;
 

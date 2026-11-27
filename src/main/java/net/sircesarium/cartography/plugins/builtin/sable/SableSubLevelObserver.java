@@ -1,8 +1,13 @@
-package net.sircesarium.cartography.compat.sable;
+package net.sircesarium.cartography.plugins.builtin.sable;
 
 import java.nio.file.Path;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+
+import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
+import dev.ryanhcode.sable.api.sublevel.SubLevelObserver;
+import dev.ryanhcode.sable.sublevel.SubLevel;
+import dev.ryanhcode.sable.sublevel.storage.SubLevelRemovalReason;
 
 import net.minecraft.server.level.ServerLevel;
 import net.sircesarium.cartography.Cartography;
@@ -10,11 +15,6 @@ import net.sircesarium.cartography.data.storage.SubLevelData;
 import net.sircesarium.cartography.helpers.FileIOHelper;
 import net.sircesarium.cartography.manager.SubLevelManager;
 import net.sircesarium.cartography.util.SubLevelScanner;
-
-import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
-import dev.ryanhcode.sable.api.sublevel.SubLevelObserver;
-import dev.ryanhcode.sable.sublevel.SubLevel;
-import dev.ryanhcode.sable.sublevel.storage.SubLevelRemovalReason;
 
 public class SableSubLevelObserver implements SubLevelObserver {
 
@@ -53,29 +53,28 @@ public class SableSubLevelObserver implements SubLevelObserver {
     @Override
     public void onSubLevelRemoved(SubLevel subLevel, SubLevelRemovalReason reason) {
         UUID uuid = subLevel.getUniqueId();
+
         Cartography.LOGGER.info("[Cartography] onSubLevelRemoved: {} reason={} closed={}", uuid, reason, closed);
 
         SubLevelData data = SubLevelManager.remove(uuid);
 
-        if (data != null) {
-            Cartography.LOGGER.info("[Cartography] Saving chunks before removal...");
+        if (data == null) return;
 
-            data.saveAllChunks();
+        Cartography.LOGGER.info("[Cartography] Saving chunks before removal...");
 
-            if (closed) return;
+        data.saveAllChunks();
 
-            Cartography.LOGGER.info("[Cartography] Chunks saved. Deleting folder async...");
+        if (closed) return;
 
-            Path basePath = data.getBasePath();
+        Cartography.LOGGER.info("[Cartography] Chunks saved. Deleting folder async...");
 
-            CompletableFuture.runAsync(() -> {
-                Cartography.LOGGER.info("[Cartography] Deleting {}...", basePath);
+        Path basePath = data.getBasePath();
 
-                FileIOHelper.deleteRecursive(basePath);
-
-                Cartography.LOGGER.info("[Cartography] Delete done.");
-            });
-        }
+        CompletableFuture.runAsync(() -> {
+            Cartography.LOGGER.info("[Cartography] Deleting {}...", basePath);
+            FileIOHelper.deleteRecursive(basePath);
+            Cartography.LOGGER.info("[Cartography] Delete done.");
+        });
     }
 
     @Override
@@ -113,5 +112,4 @@ public class SableSubLevelObserver implements SubLevelObserver {
             Cartography.LOGGER.error("[Cartography] Error in sublevel tick", e);
         }
     }
-
 }

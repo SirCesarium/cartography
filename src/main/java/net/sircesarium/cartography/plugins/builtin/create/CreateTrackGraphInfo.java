@@ -1,4 +1,4 @@
-package net.sircesarium.cartography.compat.create;
+package net.sircesarium.cartography.plugins.builtin.create;
 
 import java.util.*;
 
@@ -31,8 +31,7 @@ public record CreateTrackGraphInfo(
                 .toList()) {
             Map<TrackNode, TrackEdge> connections = graph.getConnectionsFrom(node);
 
-            if (connections == null)
-                continue;
+            if (connections == null) continue;
 
             for (Map.Entry<TrackNode, TrackEdge> entry : connections.entrySet()) {
                 TrackNode other = entry.getKey();

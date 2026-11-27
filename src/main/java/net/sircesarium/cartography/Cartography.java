@@ -6,11 +6,20 @@ import com.mojang.logging.LogUtils;
 
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.sircesarium.cartography.api.CartographyAPI;
 import net.sircesarium.cartography.config.CartographyServerConfig;
 import net.sircesarium.cartography.data.pin.PinRegistry;
+import net.sircesarium.cartography.data.pin.context.BlockContext;
+import net.sircesarium.cartography.data.pin.context.ItemContext;
+import net.sircesarium.cartography.data.pin.context.MobContext;
+import net.sircesarium.cartography.data.pin.context.PlayerContext;
+import net.sircesarium.cartography.plugins.CartographyPluginRegistry;
+import net.sircesarium.cartography.plugins.builtin.create.CreatePlugin;
+import net.sircesarium.cartography.plugins.builtin.sable.SablePlugin;
 
 @Mod(Cartography.MODID)
 public class Cartography {
@@ -25,24 +34,19 @@ public class Cartography {
         modContainer.registerConfig(ModConfig.Type.SERVER, CartographyServerConfig.SPEC);
         PinRegistry.register(modContainer.getEventBus());
 
-        if (ModList.get().isLoaded("sable")) {
-            initCompat("net.sircesarium.cartography.compat.sable.SableCompat", "Sable");
-        }
+        CartographyAPI.registerContext(new MobContext());
+        CartographyAPI.registerContext(new ItemContext());
+        CartographyAPI.registerContext(new BlockContext());
+        CartographyAPI.registerContext(new PlayerContext());
 
-        if (ModList.get().isLoaded("create")) {
-            initCompat("net.sircesarium.cartography.compat.create.CreateCompat", "Create");
-        }
+        CartographyAPI.registerPlugin(new SablePlugin());
+        CartographyAPI.registerPlugin(new CreatePlugin());
+
+        // Defer plugin init until after all @Mod constructors have registered their plugins
+        modContainer.getEventBus().addListener(this::setup);
     }
 
-    private static void initCompat(String className, String modName) {
-        try {
-            Class.forName(className)
-                    .getMethod("init")
-                    .invoke(null);
-
-            LOGGER.info("{} compat initialized", modName);
-        } catch (Exception e) {
-            LOGGER.error("Failed to initialize {} compat", modName, e);
-        }
+    private void setup(FMLCommonSetupEvent event) {
+        CartographyPluginRegistry.initAll(NeoForge.EVENT_BUS);
     }
 }

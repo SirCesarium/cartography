@@ -1,4 +1,4 @@
-package net.sircesarium.cartography.compat.create;
+package net.sircesarium.cartography.plugins.builtin.create;
 
 import com.simibubi.create.content.trains.graph.TrackNode;
 import com.simibubi.create.content.trains.graph.TrackNodeLocation;
@@ -15,6 +15,7 @@ public record CreateTrackNodeInfo(
 ) {
     public static CreateTrackNodeInfo from(TrackNode node) {
         TrackNodeLocation loc = node.getLocation();
+
         return new CreateTrackNodeInfo(
                 node.getNetId(),
                 loc.getLocation(),

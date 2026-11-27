@@ -1,4 +1,4 @@
-package net.sircesarium.cartography.compat.create;
+package net.sircesarium.cartography.plugins.builtin.create;
 
 import java.util.UUID;
 
