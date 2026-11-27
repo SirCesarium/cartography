@@ -1,0 +1,5 @@
+{
+  "type": "mob",
+  "lifetime": 300,
+  "data": ["isHostile", "isVehicle"]
+}

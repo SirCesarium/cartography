@@ -1,0 +1,17 @@
+[
+  {
+    "condition": "isHostile==true&&isVehicle==false",
+    "color": "#E53935",
+    "icon": "cartography:pins/mob_pin"
+  },
+  {
+    "condition": "isHostile==false&&isVehicle==false",
+    "color": "#66BB6A",
+    "icon": "cartography:pins/mob_pin"
+  },
+  {
+    "condition": "isVehicle==true",
+    "color": "#FFB74D",
+    "icon": "cartography:pins/mob_pin"
+  }
+]

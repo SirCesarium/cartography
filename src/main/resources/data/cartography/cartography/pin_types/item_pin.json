@@ -1,0 +1,5 @@
+{
+  "type": "item",
+  "lifetime": 300,
+  "data": ["displayName", "model"]
+}
