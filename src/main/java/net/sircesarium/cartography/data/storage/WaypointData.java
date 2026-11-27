@@ -9,6 +9,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.NeoForge;
+import net.sircesarium.cartography.api.event.CartographyWaypointEvent;
 import net.sircesarium.cartography.data.Waypoint;
 import net.sircesarium.cartography.data.WaypointVisibility;
 import net.sircesarium.cartography.util.NBTData;
@@ -36,25 +38,29 @@ public class WaypointData extends NBTData {
     }
 
     public void addWaypoint(BlockPos pos, ResourceKey<Level> dimension, String name, Integer color, ResourceLocation icon, UUID author, Long expiresAt) {
-        waypoints.add(new Waypoint(pos, dimension, name, color, icon, author, expiresAt));
+        Waypoint waypoint = new Waypoint(pos, dimension, name, color, icon, author, expiresAt);
 
+        waypoints.add(waypoint);
         markDirty();
+        NeoForge.EVENT_BUS.post(new CartographyWaypointEvent.Added(waypoint));
     }
 
     public void addWaypoint(UUID id, BlockPos pos, ResourceKey<Level> dimension, String name, Integer color, ResourceLocation icon, UUID author, Long expiresAt) {
         if (waypoints.stream().anyMatch(wp -> wp.getId().equals(id))) return;
 
-        waypoints.add(new Waypoint(id, pos, dimension, name, color, icon, author, expiresAt));
+        Waypoint waypoint = new Waypoint(id, pos, dimension, name, color, icon, author, expiresAt);
 
+        waypoints.add(waypoint);
         markDirty();
+        NeoForge.EVENT_BUS.post(new CartographyWaypointEvent.Added(waypoint));
     }
 
     public void updateWaypoint(Waypoint updated) {
         for (int i = 0; i < waypoints.size(); i++) {
             if (waypoints.get(i).getId().equals(updated.getId())) {
                 waypoints.set(i, updated);
-
                 markDirty();
+                NeoForge.EVENT_BUS.post(new CartographyWaypointEvent.Updated(updated));
 
                 return;
             }
@@ -62,10 +68,13 @@ public class WaypointData extends NBTData {
     }
 
     public boolean removeWaypoint(UUID id) {
-        if (waypoints.removeIf(wp -> wp.getId().equals(id))) {
-            markDirty();
+        for (Waypoint wp : waypoints) {
+            if (wp.getId().equals(id) && waypoints.remove(wp)) {
+                markDirty();
+                NeoForge.EVENT_BUS.post(new CartographyWaypointEvent.Removed(wp));
 
-            return true;
+                return true;
+            }
         }
 
         return false;

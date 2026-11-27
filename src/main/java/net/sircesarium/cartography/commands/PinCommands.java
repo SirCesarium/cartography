@@ -1,9 +1,9 @@
 package net.sircesarium.cartography.commands;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -26,6 +26,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.sircesarium.cartography.data.pin.Pin;
 import net.sircesarium.cartography.data.pin.PinRegistry;
+import net.sircesarium.cartography.data.pin.PinType;
+import net.sircesarium.cartography.data.pin.PinTypeDataResolver;
 import net.sircesarium.cartography.manager.PinManager;
 
 public class PinCommands {
@@ -60,18 +62,37 @@ public class PinCommands {
         ServerPlayer player = ctx.getSource().getPlayerOrException();
 
         var registry = ctx.getSource().getServer().registryAccess().registryOrThrow(PinRegistry.KEY);
+        PinType pinType = registry.get(typeId);
 
-        if (!registry.containsKey(typeId)) {
+        if (pinType == null) {
             ctx.getSource().sendFailure(Component.literal("Unknown pin type: " + typeId));
             return 0;
         }
 
-        Pin pin = Pin.create(pos, dimension, typeId, player.getUUID());
+        Map<String, Object> pinData = resolvePinData(pinType, level, pos, player);
+        Pin pin = Pin.create(pos, dimension, typeId, player.getUUID(), pinType.lifetime(), pinData);
 
         PinManager.addPin(pin);
 
         ctx.getSource().sendSuccess(() -> Component.literal("Pin added at " + pos.toShortString()), true);
         return 1;
+    }
+
+    private static Map<String, Object> resolvePinData(PinType pinType, ServerLevel level, BlockPos pos, ServerPlayer player) {
+        if (pinType.isDummy() || pinType.data().isEmpty()) {
+            return Map.of();
+        }
+
+        if (pinType.isBlock()) {
+            return PinTypeDataResolver.resolve(pinType, level.getBlockState(pos));
+        }
+
+        if (pinType.isPlayer()) {
+            return PinTypeDataResolver.resolve(pinType, player);
+        }
+
+        // Mob and item contexts require an entity/item target not present in a block-pos command
+        return Map.of();
     }
 
     private static int removePinAt(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {

@@ -25,6 +25,7 @@ public record PinType(
     public static final String BLOCK = "block";
     public static final String MOB = "mob";
     public static final String ITEM = "item";
+    public static final String PLAYER = "player";
 
     public boolean isDummy() {
         return DUMMY.equals(type);
@@ -42,6 +43,10 @@ public record PinType(
         return ITEM.equals(type);
     }
 
+    public boolean isPlayer() {
+        return PLAYER.equals(type);
+    }
+
     public static PinType dummy() {
         return new PinType(DUMMY, DEFAULT_LIFETIME, List.of());
     }
@@ -51,8 +56,8 @@ public record PinType(
     }
 
     private static DataResult<PinType> validate(PinType pt) {
-        if (!List.of(DUMMY, BLOCK, MOB, ITEM).contains(pt.type())) {
-            return DataResult.error(() -> "Unknown pin type: '" + pt.type() + "'. Must be one of: dummy, block, mob, item");
+        if (!pt.isDummy() && !PinContextRegistry.hasContext(pt.type())) {
+            return DataResult.error(() -> "Unknown pin type: '" + pt.type() + "'. Must be 'dummy' or a registered PinDataContext");
         }
 
         if (pt.isDummy() && !pt.data().isEmpty()) {

@@ -20,4 +20,8 @@ public class WaypointManager {
     public static void saveAll() {
         cache.values().forEach(WaypointData::saveIfDirty);
     }
+
+    public static void clear() {
+        cache.clear();
+    }
 }

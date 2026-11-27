@@ -39,8 +39,8 @@ public class Cartography {
         CartographyAPI.registerContext(new BlockContext());
         CartographyAPI.registerContext(new PlayerContext());
 
-        CartographyAPI.registerPlugin(new SablePlugin());
-        CartographyAPI.registerPlugin(new CreatePlugin());
+        CartographyAPI.registerPlugin("sable", SablePlugin::new);
+        CartographyAPI.registerPlugin("create", CreatePlugin::new);
 
         // Defer plugin init until after all @Mod constructors have registered their plugins
         modContainer.getEventBus().addListener(this::setup);
