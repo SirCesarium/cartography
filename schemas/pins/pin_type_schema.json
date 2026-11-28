@@ -50,35 +50,6 @@
             "if": {
                 "properties": {
                     "type": {
-                        "const": "block"
-                    }
-                }
-            },
-            "then": {
-                "properties": {
-                    "data": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "enum": [
-                                "block",
-                                "isAir",
-                                "isRedstone",
-                                "itemModel",
-                                "model",
-                                "requiresTool",
-                                "resourceLocation"
-                            ]
-                        },
-                        "uniqueItems": true
-                    }
-                }
-            }
-        },
-        {
-            "if": {
-                "properties": {
-                    "type": {
                         "const": "item"
                     }
                 }
@@ -104,6 +75,41 @@
                                 "rarity",
                                 "resourceLocation",
                                 "texture"
+                            ]
+                        },
+                        "uniqueItems": true
+                    }
+                }
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "type": {
+                        "const": "player"
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "experienceLevel",
+                                "experienceProgress",
+                                "foodLevel",
+                                "health",
+                                "isCreative",
+                                "isFlying",
+                                "isScoping",
+                                "isSleeping",
+                                "isSpectator",
+                                "isSwimming",
+                                "maxHealth",
+                                "name",
+                                "saturation"
                             ]
                         },
                         "uniqueItems": true
@@ -154,7 +160,7 @@
             "if": {
                 "properties": {
                     "type": {
-                        "const": "player"
+                        "const": "block"
                     }
                 }
             },
@@ -165,19 +171,13 @@
                         "items": {
                             "type": "string",
                             "enum": [
-                                "experienceLevel",
-                                "experienceProgress",
-                                "foodLevel",
-                                "health",
-                                "isCreative",
-                                "isFlying",
-                                "isScoping",
-                                "isSleeping",
-                                "isSpectator",
-                                "isSwimming",
-                                "maxHealth",
-                                "name",
-                                "saturation"
+                                "block",
+                                "isAir",
+                                "isRedstone",
+                                "itemModel",
+                                "model",
+                                "requiresTool",
+                                "resourceLocation"
                             ]
                         },
                         "uniqueItems": true

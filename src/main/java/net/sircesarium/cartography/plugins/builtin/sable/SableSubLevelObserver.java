@@ -31,7 +31,7 @@ public class SableSubLevelObserver implements SubLevelObserver {
     }
 
     public void close() {
-        Cartography.LOGGER.info("[Cartography] Observer close() called for level {}", level.dimension().location());
+        Cartography.LOGGER.info("Observer close() called for level {}", level.dimension().location());
 
         this.closed = true;
     }
@@ -40,7 +40,7 @@ public class SableSubLevelObserver implements SubLevelObserver {
     public void onSubLevelAdded(SubLevel subLevel) {
         UUID uuid = subLevel.getUniqueId();
 
-        Cartography.LOGGER.info("[Cartography] onSubLevelAdded: {} closed={}", uuid, closed);
+        Cartography.LOGGER.info("onSubLevelAdded: {} closed={}", uuid, closed);
 
         if (closed) return;
 
@@ -54,26 +54,26 @@ public class SableSubLevelObserver implements SubLevelObserver {
     public void onSubLevelRemoved(SubLevel subLevel, SubLevelRemovalReason reason) {
         UUID uuid = subLevel.getUniqueId();
 
-        Cartography.LOGGER.info("[Cartography] onSubLevelRemoved: {} reason={} closed={}", uuid, reason, closed);
+        Cartography.LOGGER.info("onSubLevelRemoved: {} reason={} closed={}", uuid, reason, closed);
 
         SubLevelData data = SubLevelManager.remove(uuid);
 
         if (data == null) return;
 
-        Cartography.LOGGER.info("[Cartography] Saving chunks before removal...");
+        Cartography.LOGGER.info("Saving chunks before removal...");
 
         data.saveAllChunks();
 
         if (closed) return;
 
-        Cartography.LOGGER.info("[Cartography] Chunks saved. Deleting folder async...");
+        Cartography.LOGGER.info("Chunks saved. Deleting folder async...");
 
         Path basePath = data.getBasePath();
 
         CompletableFuture.runAsync(() -> {
-            Cartography.LOGGER.info("[Cartography] Deleting {}...", basePath);
+            Cartography.LOGGER.info("Deleting {}...", basePath);
             FileIOHelper.deleteRecursive(basePath);
-            Cartography.LOGGER.info("[Cartography] Delete done.");
+            Cartography.LOGGER.info("Delete done.");
         });
     }
 
@@ -109,7 +109,7 @@ public class SableSubLevelObserver implements SubLevelObserver {
                 }
             }
         } catch (Exception e) {
-            Cartography.LOGGER.error("[Cartography] Error in sublevel tick", e);
+            Cartography.LOGGER.error("Error in sublevel tick", e);
         }
     }
 }
